@@ -1,0 +1,78 @@
+-- 지역
+INSERT INTO public.region
+(mpng_sn, sd_cd, sd_nm, sgg_cd, sgg_nm)
+VALUES
+('01001', '11', '서울특별시', '11110', '서울특별시 종로구'),
+('01002', '11', '서울특별시', '11140', '서울특별시 중구'),
+('01003', '11', '서울특별시', '11170', '서울특별시 용산구'),
+('01004', '11', '서울특별시', '11200', '서울특별시 성동구'),
+('01005', '11', '서울특별시', '11215', '서울특별시 광진구'),
+('01006', '11', '서울특별시', '11230', '서울특별시 동대문구'),
+('01007', '11', '서울특별시', '11260', '서울특별시 중랑구'),
+('01008', '11', '서울특별시', '11290', '서울특별시 성북구'),
+('01009', '11', '서울특별시', '11305', '서울특별시 강북구'),
+('01010', '11', '서울특별시', '11320', '서울특별시 도봉구'),
+('01011', '11', '서울특별시', '11350', '서울특별시 노원구'),
+('01012', '11', '서울특별시', '11380', '서울특별시 은평구'),
+('01013', '11', '서울특별시', '11410', '서울특별시 서대문구'),
+('01014', '11', '서울특별시', '11440', '서울특별시 마포구'),
+('01015', '11', '서울특별시', '11470', '서울특별시 양천구'),
+('01016', '11', '서울특별시', '11500', '서울특별시 강서구'),
+('01017', '11', '서울특별시', '11530', '서울특별시 구로구'),
+('01018', '11', '서울특별시', '11545', '서울특별시 금천구'),
+('01019', '11', '서울특별시', '11560', '서울특별시 영등포구'),
+('01020', '11', '서울특별시', '11590', '서울특별시 동작구'),
+('01021', '11', '서울특별시', '11620', '서울특별시 관악구'),
+('01022', '11', '서울특별시', '11650', '서울특별시 서초구'),
+('01023', '11', '서울특별시', '11680', '서울특별시 강남구'),
+('01024', '11', '서울특별시', '11710', '서울특별시 송파구'),
+('01025', '11', '서울특별시', '11740', '서울특별시 강동구');
+
+-- 사용자 권한
+INSERT INTO public.author
+(author_code, author_nm, author_dc, author_create_date, author_use_yn)
+VALUES
+('ROLE_ADMIN', '관리자', '시스템 관리자', CURRENT_TIMESTAMP, 'Y'),
+('ROLE_USER', '사용자', '일반사용자', CURRENT_TIMESTAMP, 'Y');
+
+-- 스터디 권한
+INSERT INTO STUDY_ROLE
+(role_code, role_nm, role_dc, role_create_date, role_use_yn)
+VALUES
+('ROLE_LEADER', '방장', '스터디 관리 권한', CURRENT_TIMESTAMP, 'Y'),
+('ROLE_MEMBER', '스터디원', '스터디 일반 회원', CURRENT_TIMESTAMP, 'Y');
+
+-- 보안설정관련
+INSERT INTO public.userscrtyestbs
+(sctry_dtrmn_trget_id, user_ty_code, author_code)
+VALUES
+('USRCNFRM_20260112001', 'USR03', 'ROLE_ADMIN'),
+('USRCNFRM_20260112002', 'USR03', 'ROLE_ADMIN'),
+('USRCNFRM_20260112003', 'USR01', 'ROLE_USER'),
+('USRCNFRM_20260112004', 'USR01', 'ROLE_USER');
+
+-- 사용자
+INSERT INTO user_info
+(user_id, username, name, password, phone, email, user_sttus_code, sbscrb_be, lgn_aprv_yn, lgn_fail_nocs, sctry_dtrmn_trget_id)
+VALUES
+(gen_random_uuid(), 'user01', '관리자1', '1234', '010-1234-5678', 'admin1@studit.com', 'Y', CURRENT_TIMESTAMP, 'Y', 0, 'USRCNFRM_20260112001' ),
+(gen_random_uuid(), 'user02', '관리자2', '5678', '010-2345-6789', 'admin2@studit.com', 'Y', CURRENT_TIMESTAMP, 'Y', 0, 'USRCNFRM_20260112002'),
+(gen_random_uuid(), 'user03', '김철수', 'abcd', '010-3456-7890', 'chulsoo@studit.com', 'Y', CURRENT_TIMESTAMP, 'Y', 0, 'USRCNFRM_20260112003'),
+(gen_random_uuid(), 'user04', '이영희', 'efgh', '010-4567-8901', 'younghee@studit.com','Y', CURRENT_TIMESTAMP, 'Y', 0, 'USRCNFRM_20260112004');
+
+-- 스터디 회원
+INSERT INTO STUDY_MBR
+(study_id, user_id, role_code, mbr_sttus_code)
+VALUES
+(1, 'c22d8f75-6996-4233-8c51-6c9dcfcc6bd2', 'ROLE_LEADER', 'APPROVED'),
+(1, '1999d8b6-31ae-4789-9081-14fb7b2290e3', 'ROLE_MEMBER', 'APPROVED');
+
+-- 스터디
+INSERT INTO STUDY
+(leader_id, study_nm, study_dc, category, mpng_sn, max_mbr_nocs, study_sttus_code)
+VALUES
+('c22d8f75-6996-4233-8c51-6c9dcfcc6bd2', '자바 스터디', '자바 기초 정복', 'IT', '01001', 5, 'Y');
+
+-- 게시판
+INSERT INTO BOARD (study_id, user_id, title, content, board_ty_cd)
+VALUES (1, 'c22d8f75-6996-4233-8c51-6c9dcfcc6bd2', '공지사항입니다', '열공합시다!', 'NOTICE');
