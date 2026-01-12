@@ -1,259 +1,276 @@
+-- 1. 지역 정보
 CREATE TABLE REGION (
-        mpng_sn VARCHAR(20) PRIMARY KEY,
-        sd_cd VARCHAR(20),
-        sd_nm VARCHAR(20),
-        sgg_cd VARCHAR(20),
-        sgg_nm VARCHAR(20)
-        );
-        COMMENT ON TABLE REGION IS '지역 정보';
-        COMMENT ON COLUMN REGION.mpng_sn IS '시군구 매핑 번호';
-        COMMENT ON COLUMN REGION.sd_cd IS '시도 코드';
-        COMMENT ON COLUMN REGION.sd_nm IS '시도명';
-        COMMENT ON COLUMN REGION.sgg_cd IS '시군구 코드';
-        COMMENT ON COLUMN REGION.sgg_nm IS '시군구명';
+    mpng_sn VARCHAR(20) PRIMARY KEY,
+    sd_cd VARCHAR(20),
+    sd_nm VARCHAR(20),
+    sgg_cd VARCHAR(20),
+    sgg_nm VARCHAR(20)
+);
+COMMENT ON TABLE REGION IS '지역 정보';
+COMMENT ON COLUMN REGION.mpng_sn IS '시군구 매핑 번호';
+COMMENT ON COLUMN REGION.sd_cd IS '시도 코드';
+COMMENT ON COLUMN REGION.sd_nm IS '시도명';
+COMMENT ON COLUMN REGION.sgg_cd IS '시군구 코드';
+COMMENT ON COLUMN REGION.sgg_nm IS '시군구명';
 
-        CREATE TABLE AUTHOR (
-        author_code VARCHAR(20) PRIMARY KEY,
-        author_nm VARCHAR(20),
-        author_dc VARCHAR(20),
-        author_create_date VARCHAR(20),
-        author_use_yn VARCHAR(1) DEFAULT 'Y'
-        );
-        COMMENT ON TABLE AUTHOR IS '권한 정보';
-        COMMENT ON COLUMN AUTHOR.author_code IS '권한 코드';
-        COMMENT ON COLUMN AUTHOR.author_nm IS '권한명';
-        COMMENT ON COLUMN AUTHOR.author_dc IS '권한 상세정보';
-        COMMENT ON COLUMN AUTHOR.author_create_date IS '권한 생성날짜';
-        COMMENT ON COLUMN AUTHOR.author_use_yn IS '권한 사용여부';
+-- 2. 권한 정보
+CREATE TABLE AUTHOR (
+    author_code VARCHAR(20) PRIMARY KEY,
+    author_nm VARCHAR(20),
+    author_dc VARCHAR(200),
+    author_create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    author_use_yn VARCHAR(1) DEFAULT 'Y'
+);
+COMMENT ON TABLE AUTHOR IS '권한 정보';
+COMMENT ON COLUMN AUTHOR.author_code IS '권한 코드';
+COMMENT ON COLUMN AUTHOR.author_nm IS '권한명';
+COMMENT ON COLUMN AUTHOR.author_dc IS '권한 상세정보';
+COMMENT ON COLUMN AUTHOR.author_create_date IS '권한 생성날짜';
+COMMENT ON COLUMN AUTHOR.author_use_yn IS '권한 사용여부';
 
-        CREATE TABLE STUDY_ROLE (
-        role_code VARCHAR(20) PRIMARY KEY,
-        role_nm VARCHAR(20),
-        role_dc VARCHAR(20),
-        role_create_date VARCHAR(20),
-        role_use_yn VARCHAR(1) DEFAULT 'Y'
-        );
-        COMMENT ON TABLE STUDY_ROLE IS '스터디 내 역할 권한';
-        COMMENT ON COLUMN STUDY_ROLE.role_code IS '권한 코드';
-        COMMENT ON COLUMN STUDY_ROLE.role_nm IS '권한명';
-        COMMENT ON COLUMN STUDY_ROLE.role_dc IS '권한 상세정보';
-        COMMENT ON COLUMN STUDY_ROLE.role_create_date IS '권한 생성날짜';
-        COMMENT ON COLUMN STUDY_ROLE.role_use_yn IS '권한 사용여부';
+-- 3. 스터디 내 역할 권한
+CREATE TABLE STUDY_ROLE (
+    role_code VARCHAR(20) PRIMARY KEY,
+    role_nm VARCHAR(20),
+    role_dc VARCHAR(200),
+    role_create_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    role_use_yn VARCHAR(1) DEFAULT 'Y'
+);
+COMMENT ON TABLE STUDY_ROLE IS '스터디 내 역할 권한';
+COMMENT ON COLUMN STUDY_ROLE.role_code IS '권한 코드';
+COMMENT ON COLUMN STUDY_ROLE.role_nm IS '권한명';
+COMMENT ON COLUMN STUDY_ROLE.role_dc IS '권한 상세정보';
+COMMENT ON COLUMN STUDY_ROLE.role_create_date IS '권한 생성날짜';
+COMMENT ON COLUMN STUDY_ROLE.role_use_yn IS '권한 사용여부';
 
-        CREATE TABLE USERSCRTYESTBS (
-        sctry_dtrmn_trget_id VARCHAR(20) PRIMARY KEY,
-        user_ty_code VARCHAR(20),
-        author_code VARCHAR(20) REFERENCES AUTHOR(author_code)
-        );
-        COMMENT ON TABLE USERSCRTYESTBS IS '보안 설정';
-        COMMENT ON COLUMN USERSCRTYESTBS.sctry_dtrmn_trget_id IS '보안설정 ID';
-        COMMENT ON COLUMN USERSCRTYESTBS.user_ty_code IS '사용자 유형 코드';
-        COMMENT ON COLUMN USERSCRTYESTBS.author_code IS '권한 코드';
+-- 4. 보안 설정 (중요 정보 - UUID)
+CREATE TABLE USERSCRTYESTBS (
+    sctry_dtrmn_trget_id VARCHAR(36) PRIMARY KEY,
+    user_ty_code VARCHAR(20),
+    author_code VARCHAR(20) REFERENCES AUTHOR(author_code)
+);
+COMMENT ON TABLE USERSCRTYESTBS IS '보안 설정';
+COMMENT ON COLUMN USERSCRTYESTBS.sctry_dtrmn_trget_id IS '보안설정 ID';
+COMMENT ON COLUMN USERSCRTYESTBS.user_ty_code IS '사용자 유형 코드';
+COMMENT ON COLUMN USERSCRTYESTBS.author_code IS '권한 코드';
 
-        CREATE TABLE "USER" (
-        user_id VARCHAR(20) PRIMARY KEY,
-        username VARCHAR(20) NOT NULL,
-        password VARCHAR(20) NOT NULL,
-        phone VARCHAR(20),
-        email VARCHAR(20),
-        user_sttus_code VARCHAR(20),
-        sbscrb_be TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        lgn_aprv_yn VARCHAR(1) DEFAULT 'Y',
-        lgn_fail_nocs VARCHAR(5) DEFAULT '0',
-        sctry_dtrmn_trget_id VARCHAR(20) UNIQUE REFERENCES USERSCRTYESTBS(sctry_dtrmn_trget_id)
-        );
-        COMMENT ON TABLE "USER" IS '회원 정보';
-        COMMENT ON COLUMN "USER".user_id IS '사용자 ID';
-        COMMENT ON COLUMN "USER".username IS '사용자 명';
-        COMMENT ON COLUMN "USER".password IS '비밀번호';
-        COMMENT ON COLUMN "USER".phone IS '휴대폰 번호';
-        COMMENT ON COLUMN "USER".email IS '이메일';
-        COMMENT ON COLUMN "USER".user_sttus_code IS '사용자 상태 코드';
-        COMMENT ON COLUMN "USER".sbscrb_be IS '가입날짜';
-        COMMENT ON COLUMN "USER".lgn_aprv_yn IS '로그인 제한 여부';
-        COMMENT ON COLUMN "USER".lgn_fail_nocs IS '로그인 실패 횟수';
-        COMMENT ON COLUMN "USER".sctry_dtrmn_trget_id IS '보안설정 ID';
+-- 5. 회원 정보 (중요 정보 - UUID)
+CREATE TABLE "USER" (
+    user_id VARCHAR(36) PRIMARY KEY,
+    username VARCHAR(20) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(20),
+    email VARCHAR(50),
+    user_sttus_code VARCHAR(20),
+    sbscrb_be TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    lgn_aprv_yn VARCHAR(1) DEFAULT 'Y',
+    lgn_fail_nocs INTEGER DEFAULT 0,
+    sctry_dtrmn_trget_id VARCHAR(36) UNIQUE REFERENCES USERSCRTYESTBS(sctry_dtrmn_trget_id)
+);
+COMMENT ON TABLE "USER" IS '회원 정보';
+COMMENT ON COLUMN "USER".user_id IS '사용자 ID';
+COMMENT ON COLUMN "USER".username IS '사용자 명';
+COMMENT ON COLUMN "USER".password IS '비밀번호';
+COMMENT ON COLUMN "USER".phone IS '휴대폰 번호';
+COMMENT ON COLUMN "USER".email IS '이메일';
+COMMENT ON COLUMN "USER".user_sttus_code IS '사용자 상태 코드';
+COMMENT ON COLUMN "USER".sbscrb_be IS '가입날짜';
+COMMENT ON COLUMN "USER".lgn_aprv_yn IS '로그인 제한 여부';
+COMMENT ON COLUMN "USER".lgn_fail_nocs IS '로그인 실패 횟수';
+COMMENT ON COLUMN "USER".sctry_dtrmn_trget_id IS '보안설정 ID';
 
-        CREATE TABLE USER_SNS_INFO (
-        sns_id VARCHAR(20) PRIMARY KEY,
-        user_id VARCHAR(20) REFERENCES "USER"(user_id),
-        sns_ty_code VARCHAR(20),
-        sns_email VARCHAR(20),
-        sns_connect_date TIMESTAMP
-        );
-        COMMENT ON TABLE USER_SNS_INFO IS 'SNS 정보';
-        COMMENT ON COLUMN USER_SNS_INFO.sns_id IS 'SNS ID';
-        COMMENT ON COLUMN USER_SNS_INFO.user_id IS '사용자 ID';
-        COMMENT ON COLUMN USER_SNS_INFO.sns_ty_code IS 'SNS 유형';
-        COMMENT ON COLUMN USER_SNS_INFO.sns_email IS 'SNS 이메일';
-        COMMENT ON COLUMN USER_SNS_INFO.sns_connect_date IS 'SNS 연동 날짜';
+-- 6. SNS 정보
+CREATE TABLE USER_SNS_INFO (
+    sns_id VARCHAR(36) PRIMARY KEY,
+    user_id VARCHAR(36) REFERENCES "USER"(user_id),
+    sns_ty_code VARCHAR(20),
+    sns_email VARCHAR(50),
+    sns_connect_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+COMMENT ON TABLE USER_SNS_INFO IS 'SNS 정보';
+COMMENT ON COLUMN USER_SNS_INFO.sns_id IS 'SNS ID';
+COMMENT ON COLUMN USER_SNS_INFO.user_id IS '사용자 ID';
+COMMENT ON COLUMN USER_SNS_INFO.sns_ty_code IS 'SNS 유형';
+COMMENT ON COLUMN USER_SNS_INFO.sns_email IS 'SNS 이메일';
+COMMENT ON COLUMN USER_SNS_INFO.sns_connect_date IS 'SNS 연동 날짜';
 
-        CREATE TABLE USER_CERT_ESTBS (
-        cert_id VARCHAR(20) PRIMARY KEY,
-        user_id VARCHAR(20) REFERENCES "USER"(user_id),
-        cert_no VARCHAR(20),
-        cert_ty_code VARCHAR(20),
-        extsh_de VARCHAR(20),
-        cert_yn VARCHAR(1) DEFAULT 'N'
-        );
-        COMMENT ON TABLE USER_CERT_ESTBS IS '인증 정보';
-        COMMENT ON COLUMN USER_CERT_ESTBS.cert_id IS '인증 ID';
-        COMMENT ON COLUMN USER_CERT_ESTBS.user_id IS '사용자 ID';
-        COMMENT ON COLUMN USER_CERT_ESTBS.cert_no IS '인증 번호';
-        COMMENT ON COLUMN USER_CERT_ESTBS.cert_ty_code IS '인증 유형';
-        COMMENT ON COLUMN USER_CERT_ESTBS.extsh_de IS '인증 기한';
-        COMMENT ON COLUMN USER_CERT_ESTBS.cert_yn IS '인증 여부';
+-- 7. 인증 정보
+CREATE TABLE USER_CERT_ESTBS (
+    cert_id VARCHAR(36) PRIMARY KEY,
+    user_id VARCHAR(36) REFERENCES "USER"(user_id),
+    cert_no VARCHAR(50),
+    cert_ty_code VARCHAR(20),
+    extsh_de VARCHAR(20),
+    cert_yn VARCHAR(1) DEFAULT 'N'
+);
+COMMENT ON TABLE USER_CERT_ESTBS IS '인증 정보';
+COMMENT ON COLUMN USER_CERT_ESTBS.cert_id IS '인증 ID';
+COMMENT ON COLUMN USER_CERT_ESTBS.user_id IS '사용자 ID';
+COMMENT ON COLUMN USER_CERT_ESTBS.cert_no IS '인증 번호';
+COMMENT ON COLUMN USER_CERT_ESTBS.cert_ty_code IS '인증 유형';
+COMMENT ON COLUMN USER_CERT_ESTBS.extsh_de IS '인증 기한';
+COMMENT ON COLUMN USER_CERT_ESTBS.cert_yn IS '인증 여부';
 
-        CREATE TABLE USER_LGN_HSTRY (
-        lgn_id VARCHAR(20) PRIMARY KEY,
-        user_id VARCHAR(20) REFERENCES "USER"(user_id),
-        lgn_date VARCHAR(20),
-        lgn_ip VARCHAR(20),
-        lgn_sttus VARCHAR(20)
-        );
-        COMMENT ON TABLE USER_LGN_HSTRY IS '로그인 이력';
-        COMMENT ON COLUMN USER_LGN_HSTRY.user_id IS '사용자 ID';
-        COMMENT ON COLUMN USER_LGN_HSTRY.lgn_date IS '로그인 날짜';
-        COMMENT ON COLUMN USER_LGN_HSTRY.lgn_ip IS '로그인 IP';
-        COMMENT ON COLUMN USER_LGN_HSTRY.lgn_sttus IS '로그인 상태';
+-- 8. 로그인 이력
+CREATE TABLE USER_LGN_HSTRY (
+    lgn_id SERIAL PRIMARY KEY,
+    user_id VARCHAR(36) REFERENCES "USER"(user_id),
+    lgn_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    lgn_ip VARCHAR(45),
+    lgn_sttus VARCHAR(20)
+);
+COMMENT ON TABLE USER_LGN_HSTRY IS '로그인 이력';
+COMMENT ON COLUMN USER_LGN_HSTRY.user_id IS '사용자 ID';
+COMMENT ON COLUMN USER_LGN_HSTRY.lgn_date IS '로그인 날짜';
+COMMENT ON COLUMN USER_LGN_HSTRY.lgn_ip IS '로그인 IP';
+COMMENT ON COLUMN USER_LGN_HSTRY.lgn_sttus IS '로그인 상태';
 
-        CREATE TABLE STUDY (
-        study_id VARCHAR(20) PRIMARY KEY,
-        leader_id VARCHAR(20) REFERENCES "USER"(user_id),
-        study_nm VARCHAR(20) NOT NULL,
-        study_dc TEXT,
-        category VARCHAR(20),
-        mpng_sn VARCHAR(20) REFERENCES REGION(mpng_sn),
-        max_mbr_nocs INTEGER,
-        study_sttus_code VARCHAR(20)
-        );
-        COMMENT ON TABLE STUDY IS '스터디 기본 구조';
-        COMMENT ON COLUMN STUDY.study_id IS '스터디 ID';
-        COMMENT ON COLUMN STUDY.leader_id IS '스터디장';
-        COMMENT ON COLUMN STUDY.study_nm IS '스터디 명';
-        COMMENT ON COLUMN STUDY.study_dc IS '스터디 상세정보';
-        COMMENT ON COLUMN STUDY.category IS '카테고리';
-        COMMENT ON COLUMN STUDY.mpng_sn IS '시군구 매핑 번호';
-        COMMENT ON COLUMN STUDY.max_mbr_nocs IS '최대 인원수';
-        COMMENT ON COLUMN STUDY.study_sttus_code IS '스터디 상태 코드';
+-- 9. 스터디 기본 구조 (일반 정보 - SERIAL)
+CREATE TABLE STUDY (
+    study_id SERIAL PRIMARY KEY,
+    leader_id VARCHAR(36) REFERENCES "USER"(user_id),
+    study_nm VARCHAR(100) NOT NULL,
+    study_dc TEXT,
+    category VARCHAR(20),
+    mpng_sn VARCHAR(20) REFERENCES REGION(mpng_sn),
+    max_mbr_nocs INTEGER,
+    study_sttus_code VARCHAR(20)
+);
+COMMENT ON TABLE STUDY IS '스터디 기본 구조';
+COMMENT ON COLUMN STUDY.study_id IS '스터디 ID';
+COMMENT ON COLUMN STUDY.leader_id IS '스터디장';
+COMMENT ON COLUMN STUDY.study_nm IS '스터디 명';
+COMMENT ON COLUMN STUDY.study_dc IS '스터디 상세정보';
+COMMENT ON COLUMN STUDY.category IS '카테고리';
+COMMENT ON COLUMN STUDY.mpng_sn IS '시군구 매핑 번호';
+COMMENT ON COLUMN STUDY.max_mbr_nocs IS '최대 인원수';
+COMMENT ON COLUMN STUDY.study_sttus_code IS '스터디 상태 코드';
 
-        CREATE TABLE STUDY_MBR (
-        study_id VARCHAR(20) REFERENCES STUDY(study_id),
-        user_id VARCHAR(20) REFERENCES "USER"(user_id),
-        role_code VARCHAR(20) REFERENCES STUDY_ROLE(role_code),
-        join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        mbr_sttus_code VARCHAR(20),
-        PRIMARY KEY (study_id, user_id)
-        );
-        COMMENT ON TABLE STUDY_MBR IS '스터디 멤버 구성';
-        COMMENT ON COLUMN STUDY_MBR.study_id IS '스터디 ID';
-        COMMENT ON COLUMN STUDY_MBR.user_id IS '사용자 ID';
-        COMMENT ON COLUMN STUDY_MBR.role_code IS '사용자 권한 코드';
-        COMMENT ON COLUMN STUDY_MBR.join_date IS '가입날짜';
-        COMMENT ON COLUMN STUDY_MBR.mbr_sttus_code IS '(승인/대기) 상태 코드';
+-- 10. 스터디 멤버 구성
+CREATE TABLE STUDY_MBR (
+    study_id INTEGER REFERENCES STUDY(study_id),
+    user_id VARCHAR(36) REFERENCES "USER"(user_id),
+    role_code VARCHAR(20) REFERENCES STUDY_ROLE(role_code),
+    join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    mbr_sttus_code VARCHAR(20),
+    PRIMARY KEY (study_id, user_id)
+);
+COMMENT ON TABLE STUDY_MBR IS '스터디 멤버 구성';
+COMMENT ON COLUMN STUDY_MBR.study_id IS '스터디 ID';
+COMMENT ON COLUMN STUDY_MBR.user_id IS '사용자 ID';
+COMMENT ON COLUMN STUDY_MBR.role_code IS '사용자 권한 코드';
+COMMENT ON COLUMN STUDY_MBR.join_date IS '가입날짜';
+COMMENT ON COLUMN STUDY_MBR.mbr_sttus_code IS '(승인/대기) 상태 코드';
 
-        CREATE TABLE APPLICATIONS (
-        id SERIAL PRIMARY KEY,
-        study_id VARCHAR(20) REFERENCES STUDY(study_id),
-        user_id VARCHAR(20) REFERENCES "USER"(user_id),
-        content TEXT,
-        status VARCHAR(20),
-        applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-        COMMENT ON TABLE APPLICATIONS IS '스터디 신청 정보';
-        COMMENT ON COLUMN APPLICATIONS.id IS '스터디 신청 ID';
-        COMMENT ON COLUMN APPLICATIONS.study_id IS '스터디 ID';
-        COMMENT ON COLUMN APPLICATIONS.user_id IS '유저 ID';
-        COMMENT ON COLUMN APPLICATIONS.content IS '신청 내용';
-        COMMENT ON COLUMN APPLICATIONS.status IS '신청 상태';
-        COMMENT ON COLUMN APPLICATIONS.applied_at IS '신청 날짜';
+-- 11. 스터디 신청 정보
+CREATE TABLE APPLICATIONS (
+    applications_id SERIAL PRIMARY KEY,
+    study_id INTEGER REFERENCES STUDY(study_id),
+    user_id VARCHAR(36) REFERENCES "USER"(user_id),
+    content TEXT,
+    status VARCHAR(20),
+    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+COMMENT ON TABLE APPLICATIONS IS '스터디 신청 정보';
+COMMENT ON COLUMN APPLICATIONS.applications_id IS '스터디 신청 ID';
+COMMENT ON COLUMN APPLICATIONS.study_id IS '스터디 ID';
+COMMENT ON COLUMN APPLICATIONS.user_id IS '유저 ID';
+COMMENT ON COLUMN APPLICATIONS.content IS '신청 내용';
+COMMENT ON COLUMN APPLICATIONS.status IS '신청 상태';
+COMMENT ON COLUMN APPLICATIONS.applied_at IS '신청 날짜';
 
-        CREATE TABLE BOARD (
-        board_id VARCHAR(20) PRIMARY KEY,
-        study_id VARCHAR(20) REFERENCES STUDY(study_id),
-        user_id VARCHAR(20) REFERENCES "USER"(user_id),
-        title VARCHAR(200),
-        content TEXT,
-        file_url TEXT,
-        board_ty_cd VARCHAR(20)
-        );
-        COMMENT ON TABLE BOARD IS '게시판(공지/자료)';
-        COMMENT ON COLUMN BOARD.board_id IS '게시판 ID';
-        COMMENT ON COLUMN BOARD.study_id IS '스터디 ID';
-        COMMENT ON COLUMN BOARD.title IS '제목';
-        COMMENT ON COLUMN BOARD.content IS '내용';
-        COMMENT ON COLUMN BOARD.file_url IS '첨부파일';
-        COMMENT ON COLUMN BOARD.user_id IS '작성자 ID';
-        COMMENT ON COLUMN BOARD.board_ty_cd IS '게시판 유형(공지사항/자료실)';
+-- 12. 게시판(공지/자료)
+CREATE TABLE BOARD (
+    board_id SERIAL PRIMARY KEY,
+    study_id INTEGER REFERENCES STUDY(study_id),
+    user_id VARCHAR(36) REFERENCES "USER"(user_id),
+    title VARCHAR(200),
+    content TEXT,
+    file_url TEXT,
+    board_ty_cd VARCHAR(20)
+);
+COMMENT ON TABLE BOARD IS '게시판(공지/자료)';
+COMMENT ON COLUMN BOARD.board_id IS '게시판 ID';
+COMMENT ON COLUMN BOARD.study_id IS '스터디 ID';
+COMMENT ON COLUMN BOARD.title IS '제목';
+COMMENT ON COLUMN BOARD.content IS '내용';
+COMMENT ON COLUMN BOARD.file_url IS '첨부파일';
+COMMENT ON COLUMN BOARD.user_id IS '작성자 ID';
+COMMENT ON COLUMN BOARD.board_ty_cd IS '게시판 유형(공지사항/자료실)';
 
-        CREATE TABLE TASKS (
-        id SERIAL PRIMARY KEY,
-        study_id VARCHAR(20) REFERENCES STUDY(study_id),
-        title VARCHAR(100),
-        due_date TIMESTAMP,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-        COMMENT ON TABLE TASKS IS '과제 정보';
-        COMMENT ON COLUMN TASKS.id IS '과제 ID';
-        COMMENT ON COLUMN TASKS.study_id IS '스터디 ID';
-        COMMENT ON COLUMN TASKS.title IS '과제명';
-        COMMENT ON COLUMN TASKS.due_date IS '마감 기한';
-        COMMENT ON COLUMN TASKS.created_at IS '생성 날짜';
+-- 13. 과제 정보
+CREATE TABLE TASKS (
+    task_id SERIAL PRIMARY KEY,
+    study_id INTEGER REFERENCES STUDY(study_id),
+    title VARCHAR(100),
+    due_date TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+COMMENT ON TABLE TASKS IS '과제 정보';
+COMMENT ON COLUMN TASKS.task_id IS '과제 ID';
+COMMENT ON COLUMN TASKS.study_id IS '스터디 ID';
+COMMENT ON COLUMN TASKS.title IS '과제명';
+COMMENT ON COLUMN TASKS.due_date IS '마감 기한';
+COMMENT ON COLUMN TASKS.created_at IS '생성 날짜';
 
-        CREATE TABLE TASK_SUBMISSIONS (
-        id SERIAL PRIMARY KEY,
-        task_id INTEGER REFERENCES TASKS(id),
-        user_id VARCHAR(20) REFERENCES "USER"(user_id),
-        status VARCHAR(20),
-        submitted_at TIMESTAMP
-        );
-        COMMENT ON TABLE TASK_SUBMISSIONS IS '과제 제출 정보';
-        COMMENT ON COLUMN TASK_SUBMISSIONS.id IS '과제 제출 ID';
-        COMMENT ON COLUMN TASK_SUBMISSIONS.task_id IS '과제 ID';
-        COMMENT ON COLUMN TASK_SUBMISSIONS.user_id IS '유저 ID';
-        COMMENT ON COLUMN TASK_SUBMISSIONS.status IS '제출 상태';
-        COMMENT ON COLUMN TASK_SUBMISSIONS.submitted_at IS '실제 제출 일시';
+-- 14. 과제 제출 정보
+CREATE TABLE TASK_SUBMISSIONS (
+    submissions_id SERIAL PRIMARY KEY,
+    task_id INTEGER REFERENCES TASKS(id),
+    user_id VARCHAR(36) REFERENCES "USER"(user_id),
+    status VARCHAR(20),
+    submitted_at TIMESTAMP
+);
+COMMENT ON TABLE TASK_SUBMISSIONS IS '과제 제출 정보';
+COMMENT ON COLUMN TASK_SUBMISSIONS.submissions_id IS '과제 제출 ID';
+COMMENT ON COLUMN TASK_SUBMISSIONS.task_id IS '과제 ID';
+COMMENT ON COLUMN TASK_SUBMISSIONS.user_id IS '유저 ID';
+COMMENT ON COLUMN TASK_SUBMISSIONS.status IS '제출 상태';
+COMMENT ON COLUMN TASK_SUBMISSIONS.submitted_at IS '실제 제출 일시';
 
-        CREATE TABLE ATTENDANCE (
-        attendance_id VARCHAR(20) PRIMARY KEY,
-        study_id VARCHAR(20) REFERENCES STUDY(study_id),
-        user_id VARCHAR(20) REFERENCES "USER"(user_id),
-        check_date VARCHAR(20),
-        atend_sttus_code VARCHAR(20),
-        hw_submit_yn VARCHAR(1) DEFAULT 'N'
-        );
-        COMMENT ON TABLE ATTENDANCE IS '출석/과제관리';
-        COMMENT ON COLUMN ATTENDANCE.attendance_id IS '출석 ID';
-        COMMENT ON COLUMN ATTENDANCE.study_id IS '스터디 ID';
-        COMMENT ON COLUMN ATTENDANCE.user_id IS '대상자 ID';
-        COMMENT ON COLUMN ATTENDANCE.check_date IS '체크 날짜';
-        COMMENT ON COLUMN ATTENDANCE.atend_sttus_code IS '출석/지각/결석';
-        COMMENT ON COLUMN ATTENDANCE.hw_submit_yn IS '과제 제출 여부';
+-- 15. 출석/과제관리
+CREATE TABLE ATTENDANCE (
+    attendance_id SERIAL PRIMARY KEY,
+    study_id INTEGER REFERENCES STUDY(study_id),
+    user_id VARCHAR(36) REFERENCES "USER"(user_id),
+    check_date DATE,
+    atend_sttus_code VARCHAR(20),
+    hw_submit_yn VARCHAR(1) DEFAULT 'N'
+);
+COMMENT ON TABLE ATTENDANCE IS '출석/과제관리';
+COMMENT ON COLUMN ATTENDANCE.attendance_id IS '출석 ID';
+COMMENT ON COLUMN ATTENDANCE.study_id IS '스터디 ID';
+COMMENT ON COLUMN ATTENDANCE.user_id IS '대상자 ID';
+COMMENT ON COLUMN ATTENDANCE.check_date IS '체크 날짜';
+COMMENT ON COLUMN ATTENDANCE.atend_sttus_code IS '출석/지각/결석';
+COMMENT ON COLUMN ATTENDANCE.hw_submit_yn IS '과제 제출 여부';
 
-        CREATE TABLE FEE_MGMT (
-        fee_id VARCHAR(20) PRIMARY KEY,
-        study_id VARCHAR(20) REFERENCES STUDY(study_id),
-        user_id VARCHAR(20) REFERENCES "USER"(user_id),
-        amount INTEGER,
-        fee_ty_code VARCHAR(20),
-        pay_yn VARCHAR(1) DEFAULT 'N'
-        );
-        COMMENT ON TABLE FEE_MGMT IS '회비/벌금관리';
-        COMMENT ON COLUMN FEE_MGMT.fee_id IS '회비 및 벌금 ID';
-        COMMENT ON COLUMN FEE_MGMT.study_id IS '스터디 ID';
-        COMMENT ON COLUMN FEE_MGMT.user_id IS '납부자 ID';
-        COMMENT ON COLUMN FEE_MGMT.amount IS '금액';
-        COMMENT ON COLUMN FEE_MGMT.fee_ty_code IS '참가비/벌금/보증금';
-        COMMENT ON COLUMN FEE_MGMT.pay_yn IS '납부 여부';
+-- 16. 회비/벌금관리
+CREATE TABLE FEE_MGMT (
+    fee_id SERIAL PRIMARY KEY,
+    study_id INTEGER REFERENCES STUDY(study_id),
+    user_id VARCHAR(36) REFERENCES "USER"(user_id),
+    amount INTEGER,
+    fee_ty_code VARCHAR(20),
+    pay_yn VARCHAR(1) DEFAULT 'N'
+);
+COMMENT ON TABLE FEE_MGMT IS '회비/벌금관리';
+COMMENT ON COLUMN FEE_MGMT.fee_id IS '회비 및 벌금 ID';
+COMMENT ON COLUMN FEE_MGMT.study_id IS '스터디 ID';
+COMMENT ON COLUMN FEE_MGMT.user_id IS '납부자 ID';
+COMMENT ON COLUMN FEE_MGMT.amount IS '금액';
+COMMENT ON COLUMN FEE_MGMT.fee_ty_code IS '참가비/벌금/보증금';
+COMMENT ON COLUMN FEE_MGMT.pay_yn IS '납부 여부';
 
-        CREATE TABLE BADGES (
-        id SERIAL PRIMARY KEY,
-        user_id VARCHAR(20) REFERENCES "USER"(user_id),
-        badge_name VARCHAR(50),
-        earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-        COMMENT ON TABLE BADGES IS '사용자 배지';
-        COMMENT ON COLUMN BADGES.id IS '배지 ID';
-        COMMENT ON COLUMN BADGES.user_id IS '유저 ID';
-        COMMENT ON COLUMN BADGES.badge_name IS '배지 이름';
-        COMMENT ON COLUMN BADGES.earned_at IS '획득 날짜';
+-- 17. 사용자 배지
+CREATE TABLE BADGES (
+    badges_id SERIAL PRIMARY KEY,
+    user_id VARCHAR(36) REFERENCES "USER"(user_id),
+    badge_name VARCHAR(50),
+    earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+COMMENT ON TABLE BADGES IS '사용자 배지';
+COMMENT ON COLUMN BADGES.badges_id IS '배지 ID';
+COMMENT ON COLUMN BADGES.user_id IS '유저 ID';
+COMMENT ON COLUMN BADGES.badge_name IS '배지 이름';
+COMMENT ON COLUMN BADGES.earned_at IS '획득 날짜';
