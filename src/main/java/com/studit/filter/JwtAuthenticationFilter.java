@@ -1,5 +1,6 @@
-package com.studit.filter.jwt;
+package com.studit.filter;
 
+import com.studit.filter.jwt.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

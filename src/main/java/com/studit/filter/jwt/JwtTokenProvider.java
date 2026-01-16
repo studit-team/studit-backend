@@ -63,7 +63,7 @@ public class JwtTokenProvider {
     // 4. HTTP 헤더에서 토큰 추출 ("Authorization" : "Bearer TOKEN")
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+        if (bearerToken != null && bearerToken.startsWith("Bearer")) {
             return bearerToken.substring(7);
         }
         return null;
@@ -75,7 +75,7 @@ public class JwtTokenProvider {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
-            // 토큰이 변조되었거나 만료된 경우 false 반환
+            // 토큰이 변조되었거나 만료된 경우 false ₩반환
             return false;
         }
     }
