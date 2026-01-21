@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.studit.domain.study.mapper.StudyListMapper">
+    <select id="getStudyList" resultType="com.studit.domain.study.entity.Study">
+        select *
+        from study;
+    </select>
+
+    <select id="searchStudyList" resultType="com.studit.domain.study.dto.study.StudyListRespDto" parameterType="com.studit.domain.study.dto.study.StudyListReqDto">
+        SELECT
+            s.study_id,
+            s.leader_id,
+            s.study_nm,
+            s.study_dc,
+            s.max_mbr_nocs,
+            s.study_status_code,
+            r.sgg_nm,
+            (SELECT STRING_AGG(cc.category_nm, ', ')
+            FROM study_category_mapping scm
+            JOIN category_code cc ON scm.category_id = cc.category_id
+            WHERE scm.study_id = s.study_id) as categoryNames,
+            (SELECT '매주 ' || STRING_AGG(REPLACE(dc.day_nm, '요일', ''), ', ')
+            FROM study_day_mapping sdm
+            JOIN day_code dc ON sdm.day_id = dc.day_id
+            WHERE sdm.study_id = s.study_id) as dayNames,
+            (SELECT COUNT(*)
+            FROM study_mbr m
+            WHERE m.study_id = s.study_id
+            AND m.mbr_sttus_code = 'APPROVED') as currentMbrCnt
+        FROM study s
+        LEFT JOIN region r ON s.mpng_sn = r.mpng_sn
+        <where>
+            <if test="studyNm != null and studyNm != ''">
+                AND s.study_nm LIKE CONCAT('%', #{studyNm}, '%')
+            </if>
+            <if test="category != null and category.size() > 0">
+                AND EXISTS (
+                SELECT 1
+                FROM study_category_mapping scm
+                WHERE scm.study_id = s.study_id
+                AND scm.category_id IN
+                <foreach item="cat" collection="category" open="(" separator="," close=")">
+                    #{cat}
+                </foreach>
+                )
+            </if>
+            <if test="dayIds != null and dayIds.size() > 0">
+                AND EXISTS (
+                SELECT 1
+                FROM study_day_mapping sdm
+                WHERE sdm.study_id = s.study_id
+                AND sdm.day_id IN
+                <foreach item="day" collection="dayIds" open="(" separator="," close=")">
+                    #{day}
+                </foreach>
+                )
+            </if>
+
+            <if test="mpngSn != null and mpngSn.size() > 0">
+                AND s.mpng_sn IN
+                <foreach item="sn" collection="mpngSn" open="(" separator="," close=")">
+                    #{sn}
+                </foreach>
+            </if>
+
+            AND s.study_status_code = 'Y'
+        </where>
+        ORDER BY s.study_id DESC
+    </select>
+
+    <select id="getRegionList" resultType="com.studit.domain.study.dto.study.RegionRespDto">
+    SELECT
+        mpng_sn,
+        sd_nm,
+        sgg_nm
+    FROM region
+    ORDER BY mpng_sn;
+    </select>
+
+    <select id="getCategoryList" resultType="com.studit.domain.study.dto.study.CategoryRespDto">
+        select *
+        from category_code;
+    </select>
+
+</mapper>

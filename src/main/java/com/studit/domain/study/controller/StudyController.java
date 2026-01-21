@@ -1,22 +1,56 @@
 package com.studit.domain.study.controller;
 
+import com.studit.domain.study.dto.study.StudyListReqDto;
 import com.studit.domain.study.service.StudyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/studies")
 public class StudyController {
 
     @Autowired
     public StudyService studyService;
 
-    @GetMapping("/studies.do")
-    public ResponseEntity<?> getStudies() {
+    @GetMapping("/list")
+    public ResponseEntity<?> getStudyList() {
 
-        return ResponseEntity.ok(studyService.getStudies());
+        return ResponseEntity.ok(studyService.getStudyList());
+    }
+
+    @GetMapping("/search/list")
+    public ResponseEntity<?> getStudySearchList(@ModelAttribute StudyListReqDto studyListReqDto) {
+
+        return ResponseEntity.ok(studyService.searchStudyList(studyListReqDto));
+    }
+
+    @GetMapping("/{studyId}/home")
+    public ResponseEntity<?> getStudySummary(@PathVariable int studyId) {
+
+        return ResponseEntity.ok(studyService.getStudyHomeData(studyId));
+    }
+
+    @GetMapping("/{studyId}/notice")
+    public ResponseEntity<?> getStudyNotice(@PathVariable int studyId) {
+
+        return ResponseEntity.ok(studyService.getStudyNotices(studyId));
+    }
+    @GetMapping("/{studyId}/schedules")
+    public ResponseEntity<?> getStudySchedules(@PathVariable int studyId) {
+
+        return ResponseEntity.ok(studyService.getStudySchedule(studyId));
+    }
+
+    @GetMapping("/region/list")
+    public ResponseEntity<?> getRegionSearchList() {
+
+        return ResponseEntity.ok(studyService.getRegionList());
+    }
+
+    @GetMapping("/category/list")
+    public ResponseEntity<?> getCategoryList() {
+
+        return ResponseEntity.ok(studyService.getCategoryList());
     }
 }

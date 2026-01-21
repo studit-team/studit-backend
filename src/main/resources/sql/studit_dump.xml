@@ -313,3 +313,50 @@ VALUES
 -- 게시판
 INSERT INTO BOARD (study_id, user_id, title, content, board_ty_cd)
 VALUES (1, 'c22d8f75-6996-4233-8c51-6c9dcfcc6bd2', '공지사항입니다', '열공합시다!', 'NOTICE');
+
+--카테고리 추가
+INSERT INTO category_code (category_id, category_nm) VALUES
+('IT', 'IT/프로그래밍'),
+('LANG', '어학/외국어'),
+('CERT', '자격증'),
+('JOB', '취업/면접'),
+('HOBBY', '취미/교양');
+
+-- 1번 스터디에 '외국어' 카테고리도 추가 (이제 1번 스터디는 IT + 외국어)
+INSERT INTO study_category_mapping (study_id, category_id) VALUES (1, 'IT');
+
+-- 2번 스터디가 있다면 '취업/면접' 카테고리 부여
+INSERT INTO study_category_mapping (study_id, category_id) VALUES (1, 'JOB');
+
+-- 요일 추가
+INSERT INTO day_code (day_id, day_nm) VALUES
+('MON', '월요일'),
+('TUE', '화요일'),
+('WED', '수요일'),
+('THU', '목요일'),
+('FRI', '금요일'),
+('SAT', '토요일'),
+('SUN', '일요일');
+
+-- 스터디 요일 임시데이터 추가
+INSERT INTO study_day_mapping (study_id, day_id) VALUES (1, 'MON'), (1, 'WED');
+INSERT INTO study_day_mapping (study_id, day_id) VALUES (1, 'SAT');
+
+-- 1. 완료된 지난 일정
+INSERT INTO study_schedule (study_id, title, description, meeting_at, location, status)
+VALUES
+(1, '자바 환경 설정 및 OT', 'JDK 설치 및 첫인사', '2026-01-05 19:00:00+09', '강남역 스터디룸', 'COMPLETED'),
+(1, '자바 기초 문법 - 변수와 연산자', '변수 선언 및 연산자 기초 공부', '2026-01-12 19:00:00+09', '강남역 스터디룸', 'COMPLETED'),
+(1, '제어문과 반복문', '조건문(if, switch) 및 반복문 실습', '2026-01-19 19:00:00+09', '강남역 스터디룸', 'COMPLETED');
+
+-- 2. 예정된 일정 (가장 가까운 일정 포함)
+INSERT INTO study_schedule (study_id, title, description, meeting_at, location, status)
+VALUES
+(1, '객체 지향 프로그래밍 기초', '클래스, 객체, 상속의 이해', '2026-01-26 19:00:00+09', '강남역 스터디룸', 'PLANNED'),
+(1, '인터페이스와 다형성', '추상 클래스와 인터페이스 차이점', '2026-02-02 19:00:00+09', '강남역 스터디룸', 'PLANNED'),
+(1, '자바 예외 처리', 'Try-Catch 문 및 예외 커스텀', '2026-02-09 19:00:00+09', '온라인(Discord)', 'PLANNED');
+
+-- 3. 취소된 일정
+INSERT INTO study_schedule (study_id, title, description, meeting_at, location, status)
+VALUES
+(1, '설 연휴 휴강', '공휴일로 인한 휴방입니다.', '2026-01-28 19:00:00+09', '-', 'CANCELLED');

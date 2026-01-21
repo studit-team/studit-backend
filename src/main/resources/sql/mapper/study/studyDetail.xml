@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.studit.domain.study.mapper.StudyDetailMapper">
+    <select id="getStudyHomeInfo" resultType="com.studit.domain.study.dto.study.StudyHomeRespDto">
+        SELECT
+            s.study_id,
+            s.study_nm,
+            s.study_dc,
+            s.max_mbr_nocs,
+            -- 승인된 멤버 수 계산
+            (SELECT COUNT(*) FROM study_mbr sm
+             WHERE sm.study_id = s.study_id AND sm.mbr_sttus_code = 'APPROVED') as current_mbr_count,
+            -- 요일 ID들을 쉼표로 합침
+            (SELECT string_agg(day_id, ',') FROM study_day_mapping sdm
+             WHERE sdm.study_id = s.study_id) as regular_days,
+            -- 카테고리 ID들을 쉼표로 합침
+            (SELECT string_agg(category_id, ',') FROM study_category_mapping scm
+             WHERE scm.study_id = s.study_id) as category_ids
+        FROM study s
+        WHERE s.study_id = #{studyId}
+    </select>
+
+    <select id="getWeeklySchedules" resultType="com.studit.domain.study.dto.schedule.ScheduleRespDto">
+        SELECT
+            schedule_id as scheduleId,
+            title,
+            description,
+            meeting_at as meetingAt,
+            location,
+            status
+        FROM study_schedule
+        WHERE study_id = #{studyId}
+          AND meeting_at >= CURRENT_DATE - CAST(EXTRACT(DOW FROM CURRENT_DATE) AS INT)
+          AND meeting_at &lt; CURRENT_DATE - CAST(EXTRACT(DOW FROM CURRENT_DATE) AS INT) + 7
+        ORDER BY meeting_at
+    </select>
+
+    <select id="getRecentNotices" resultType="com.studit.domain.study.dto.post.PostListRespDto">
+        SELECT
+            board_id as boardId,
+            user_id as userId,
+            title,
+            board_ty_cd as boardTyCd
+        FROM board
+        WHERE study_id = #{studyId}
+          AND board_ty_cd = 'NOTICE'
+        ORDER BY boardId
+        LIMIT 2
+    </select>
+    <select id="getStudyNotices" resultType="com.studit.domain.study.dto.post.PostDetailRespDto">
+        SELECT
+            board_id as boardId,
+            ui.user_id as userId,
+            ui.username,
+            title,
+            content,
+            file_url as fileUrl,
+            board_ty_cd as boardTyCd
+        FROM board
+        left join public.user_info ui on ui.user_id = board.user_id
+        WHERE study_id = #{studyId}
+          AND board_ty_cd = 'NOTICE'
+        ORDER BY boardId
+    </select>
+
+    <select id="getStudySchedules" resultType="com.studit.domain.study.dto.schedule.ScheduleRespDto">
+        SELECT
+            schedule_id as scheduleId,
+            title,
+            description,
+            meeting_at as meetingAt,
+            location,
+            status
+        FROM study_schedule
+        WHERE study_id = #{studyId}
+        ORDER BY meeting_at desc
+    </select>
+</mapper>

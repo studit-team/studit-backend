@@ -1,4 +1,4 @@
-package com.studit.domain.study.dto;
+package com.studit.domain.study.dto.study;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,16 +7,18 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class StudyReqDto {
+@NoArgsConstructor
+public class StudyListRespDto {
 
     private int studyId;
     private String leaderId;
     private String studyNm;
     private String studyDc;
-    private String category;
-    private String mpngSn;
     private int maxMbrNocs;
     private String studyStatusCode;
+    private String categoryNames;
+    private String sggNm;
+    private Long currentMbrCnt;
+    private String dayNames;
 }
