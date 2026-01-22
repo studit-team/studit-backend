@@ -25,7 +25,8 @@ public class CustomUserDetails implements UserDetails {
         if (authorCode == null || authorCode.isEmpty()) {
             return Collections.emptyList();
         }
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + authorCode));
+        String authority = authorCode.startsWith("ROLE_") ? authorCode : "ROLE_" + authorCode;
+        return Collections.singletonList(new SimpleGrantedAuthority(authority));
     }
 
     @Override
@@ -56,9 +57,9 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        // user_sttus_code가 활성 상태인지 확인 (예: "ACTIVE")
         return user.getUserStatusCode() == null ||
-                "ACTIVE".equals(user.getUserStatusCode());
+                "Y".equals(user.getUserStatusCode()) ||
+                "Y".equals(user.getUserStatusCode());
     }
 
     public String getUserId() {

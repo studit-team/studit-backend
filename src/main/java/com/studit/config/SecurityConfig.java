@@ -59,6 +59,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()  // 로그인, 회원가입 등
                         .requestMatchers("/api/public/**").permitAll() // 공개 API
+                        .requestMatchers("/api/studies/**").permitAll() // 스터디게시판
                         .anyRequest().authenticated()                  // 나머지는 인증 필요
                 )
 
