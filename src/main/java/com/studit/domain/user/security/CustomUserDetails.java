@@ -36,7 +36,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getEmail(); // 이메일을 username으로 사용
+        return user.getUsername(); // 이메일을 username으로 사용
     }
 
     @Override
@@ -66,11 +66,9 @@ public class CustomUserDetails implements UserDetails {
         return user.getUserId();
     }
 
-    public String getEmail() {
-        return user.getEmail();
-    }
-
     public String getAuthorCode() {
         return user.getAuthorCode();
     }
+
+    public String getName() {return user.getName();}
 }

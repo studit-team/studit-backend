@@ -52,7 +52,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             // 인증 토큰 생성 (email을 username으로 사용)
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getEmail(),
+                            loginRequest.getUsername(),
                             loginRequest.getPassword()
                     );
 
@@ -76,8 +76,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // JWT 토큰 생성
         String token = jwtUtil.generateToken(
                 userDetails.getUserId(),
-                userDetails.getEmail(),
-                userDetails.getAuthorCode()
+                userDetails.getUsername(),
+                userDetails.getAuthorCode(),
+                userDetails.getName()
+
         );
 
         // 로그인 실패 횟수 초기화
@@ -91,7 +93,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 .token(token)
                 .userId(userDetails.getUserId())
                 .username(userDetails.getUser().getUsername())
-                .email(userDetails.getEmail())
+                .name(userDetails.getUser().getName())
                 .authorCode(userDetails.getAuthorCode())
                 .build();
 

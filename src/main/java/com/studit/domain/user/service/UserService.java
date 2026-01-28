@@ -59,15 +59,15 @@ public class UserService {
         // 3. 사용자 정보 생성
         UserDTO userInfo = UserDTO.builder()
                 .userId(UUID.randomUUID().toString())
-                .username(signupRequest.getUsername() != null ? signupRequest.getUsername() : signupRequest.getEmail().split("@")[0])
+                .username(signupRequest.getUsername())
                 .password(passwordEncoder.encode(signupRequest.getPassword()))
-                .email(signupRequest.getEmail())
                 .phone(signupRequest.getPhone())
                 .userStatusCode("Y")
                 .sbscrbBe(LocalDateTime.now())
                 .lgnAprvYn("Y")
                 .lgnFailNocs(0)
                 .sctryDtrmnTrgetId(securityId)
+                .name(signupRequest.getName())
                 .build();
 
         // 4. 사용자 정보 삽입

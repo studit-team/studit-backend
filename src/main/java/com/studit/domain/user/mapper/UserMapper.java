@@ -11,7 +11,7 @@ public interface UserMapper {
     /**
      * 이메일로 사용자 정보 조회 (권한 정보 포함)
      */
-    UserDTO findByEmail(@Param("email") String email);
+    UserDTO findByEmail(@Param("username") String username);
 
     /**
      * 사용자 ID로 조회

@@ -23,7 +23,7 @@ public class AuthController {
     public ResponseEntity<?> signup(@RequestBody SignupRequestDto signupRequest) {
         try {
             // 이메일 중복 확인
-            if (userService.existsByEmail(signupRequest.getEmail())) {
+            if (userService.existsByEmail(signupRequest.getUsername())) {
                 return ResponseEntity.badRequest()
                         .body(createErrorResponse("이미 사용 중인 이메일입니다."));
             }
