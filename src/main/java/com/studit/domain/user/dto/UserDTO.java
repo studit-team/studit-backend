@@ -12,12 +12,12 @@ public class UserDTO {
     private String username;
     private String password;
     private String phone;
-    private String email;
     private String userStatusCode;
     private LocalDateTime sbscrbBe;
     private String lgnAprvYn;
     private Integer lgnFailNocs;
     private String sctryDtrmnTrgetId;
+    private String name;
 
     // 권한 정보 (Join)
     private String authorCode;

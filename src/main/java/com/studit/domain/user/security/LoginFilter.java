@@ -52,7 +52,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             // 인증 토큰 생성 (email을 username으로 사용)
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getEmail(),
+                            loginRequest.getUsername(),
                             loginRequest.getPassword()
                     );
 
@@ -76,7 +76,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // JWT 토큰 생성
         String token = jwtUtil.generateToken(
                 userDetails.getUserId(),
-                userDetails.getEmail(),
+                userDetails.getUsername(),
                 userDetails.getAuthorCode()
         );
 
@@ -91,7 +91,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 .token(token)
                 .userId(userDetails.getUserId())
                 .username(userDetails.getUser().getUsername())
-                .email(userDetails.getEmail())
                 .authorCode(userDetails.getAuthorCode())
                 .build();
 
