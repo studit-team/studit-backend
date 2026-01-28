@@ -77,7 +77,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtUtil.generateToken(
                 userDetails.getUserId(),
                 userDetails.getUsername(),
-                userDetails.getAuthorCode()
+                userDetails.getAuthorCode(),
+                userDetails.getName()
+
         );
 
         // 로그인 실패 횟수 초기화
@@ -91,6 +93,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 .token(token)
                 .userId(userDetails.getUserId())
                 .username(userDetails.getUser().getUsername())
+                .name(userDetails.getUser().getName())
                 .authorCode(userDetails.getAuthorCode())
                 .build();
 

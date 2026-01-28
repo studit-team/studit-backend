@@ -69,4 +69,6 @@ public class CustomUserDetails implements UserDetails {
     public String getAuthorCode() {
         return user.getAuthorCode();
     }
+
+    public String getName() {return user.getName();}
 }

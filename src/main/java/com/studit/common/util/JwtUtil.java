@@ -24,13 +24,14 @@ public class JwtUtil {
     /**
      * JWT 토큰 생성
      */
-    public String generateToken(String userId, String email, String authorCode) {
+    public String generateToken(String userId, String username, String name, String authorCode) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
                 .subject(userId)
-                .claim("email", email)
+                .claim("username", username)
+                .claim("name", name)
                 .claim("authorCode", authorCode)
                 .issuedAt(now)
                 .expiration(expiryDate)

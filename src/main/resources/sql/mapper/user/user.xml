@@ -24,6 +24,7 @@
     <select id="findByEmail" resultMap="UserInfoResultMap">
         SELECT
             ui.user_id,
+            ui.name,
             ui.username,
             ui.password,
             ui.phone,
@@ -43,6 +44,7 @@
     <select id="findByUserId" resultMap="UserInfoResultMap">
         SELECT
             ui.user_id,
+            ui.name,
             ui.username,
             ui.password,
             ui.phone,
