@@ -2,6 +2,7 @@ package com.studit.domain.study.mapper;
 
 import com.studit.domain.study.dto.post.PostDetailRespDto;
 import com.studit.domain.study.dto.post.PostListRespDto;
+import com.studit.domain.study.dto.schedule.AssignmentRespDto;
 import com.studit.domain.study.dto.schedule.ScheduleRespDto;
 import com.studit.domain.study.dto.study.StudyHomeRespDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -41,4 +42,16 @@ public interface StudyDetailMapper {
      * (board 테이블 활용)
      */
     List<PostDetailRespDto> getStudyNotices(@Param("studyId") int studyId);
+
+    /**
+     * 스터디 과제 조회
+     * (task 테이블 활용)
+     */
+    List<AssignmentRespDto> getStudyTasks(@Param("studyId") int studyId);
+
+    /**
+     * 스터디 자유게시판 조회
+     * (board 테이블 활용)
+     */
+    List<PostListRespDto> getStudyFreeBoardList(@Param("studyId") int studyId);
 }

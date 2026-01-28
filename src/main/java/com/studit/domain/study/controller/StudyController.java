@@ -42,6 +42,17 @@ public class StudyController {
         return ResponseEntity.ok(studyService.getStudySchedule(studyId));
     }
 
+    @GetMapping("/{studyId}/tasks")
+    public ResponseEntity<?> getStudyTasks(@PathVariable int studyId) {
+
+        return ResponseEntity.ok(studyService.getStudyTasks(studyId));
+    }
+    @GetMapping("/{studyId}/board/list")
+    public ResponseEntity<?> getStudyFreeBoardList(@PathVariable int studyId) {
+
+        return ResponseEntity.ok(studyService.getStudyFreeBoardList(studyId));
+    }
+
     @GetMapping("/region/list")
     public ResponseEntity<?> getRegionSearchList() {
 
@@ -53,4 +64,6 @@ public class StudyController {
 
         return ResponseEntity.ok(studyService.getCategoryList());
     }
+
+
 }

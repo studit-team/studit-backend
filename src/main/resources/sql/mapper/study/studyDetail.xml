@@ -2,6 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.studit.domain.study.mapper.StudyDetailMapper">
+
+    <resultMap id="assignmentMap" type="com.studit.domain.study.dto.schedule.AssignmentRespDto">
+        <id property="taskId" column="task_id"/>
+        <result property="studyId" column="study_id"/>
+        <result property="title" column="title"/>
+        <result property="dueDate" column="due_date"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="maxMbrNocs" column="max_mbr_nocs"/>
+
+        <collection property="submissions" ofType="com.studit.domain.study.dto.schedule.SubmissionDto">
+            <result property="userId" column="user_id"/>
+            <result property="submittedAt" column="submitted_at"/>
+            <result property="status" column="status"/>
+        </collection>
+    </resultMap>
+
     <select id="getStudyHomeInfo" resultType="com.studit.domain.study.dto.study.StudyHomeRespDto">
         SELECT
             s.study_id,
@@ -76,4 +92,37 @@
         WHERE study_id = #{studyId}
         ORDER BY meeting_at desc
     </select>
+
+    <select id="getStudyTasks" resultMap="assignmentMap">
+        SELECT
+            t.task_id,
+            t.study_id,
+            t.title,
+            t.due_date,
+            t.created_at,
+            (SELECT max_mbr_nocs FROM study sm
+             WHERE sm.study_id = t.study_id) as max_mbr_nocs,
+            ts.user_id,
+            ts.submitted_at,
+            ts.status
+        FROM tasks t
+                 LEFT OUTER JOIN task_submissions ts ON t.task_id = ts.task_id
+        WHERE t.study_id = #{studyId}
+        ORDER BY t.task_id
+    </select>
+
+    <select id="getStudyFreeBoardList" resultType="com.studit.domain.study.dto.post.PostListRespDto">
+        SELECT
+            board_id as boardId,
+            user_id as userId,
+            title,
+            board_ty_cd as boardTyCd,
+            (SELECT username FROM user_info ui
+             WHERE ui.user_id = b.user_id) as username
+        FROM board b
+        WHERE study_id = #{studyId}
+          AND board_ty_cd = 'FREE'
+        ORDER BY boardId
+    </select>
+
 </mapper>

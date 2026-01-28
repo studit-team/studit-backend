@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class PostListRespDto {
     private int boardId;
     private String userId;
+    private String username;
     private String title;
     private String boardTyCd;
     private LocalDateTime createdAt;

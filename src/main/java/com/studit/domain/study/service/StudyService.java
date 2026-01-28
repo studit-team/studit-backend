@@ -2,6 +2,7 @@ package com.studit.domain.study.service;
 
 import com.studit.domain.study.dto.post.PostDetailRespDto;
 import com.studit.domain.study.dto.post.PostListRespDto;
+import com.studit.domain.study.dto.schedule.AssignmentRespDto;
 import com.studit.domain.study.dto.schedule.ScheduleRespDto;
 import com.studit.domain.study.dto.study.*;
 import com.studit.domain.study.entity.Study;
@@ -71,17 +72,25 @@ public class StudyService {
     public List<RegionRespDto> getRegionList() {
         return studyListMapper.getRegionList();
     }
-
+    @Transactional(readOnly = true)
     public List<CategoryRespDto> getCategoryList() {
             return studyListMapper.getCategoryList();
     }
-
+    @Transactional(readOnly = true)
     public List<PostDetailRespDto> getStudyNotices(int studyId) {
         return studyDetailMapper.getStudyNotices(studyId);
     }
-
+    @Transactional(readOnly = true)
     public List<ScheduleRespDto> getStudySchedule(int studyId) {
         return studyDetailMapper.getStudySchedules(studyId);
+    }
+    @Transactional(readOnly = true)
+    public List<AssignmentRespDto> getStudyTasks(int studyId) {
+        return studyDetailMapper.getStudyTasks(studyId);
+    }
+    @Transactional(readOnly = true)
+    public List<PostListRespDto> getStudyFreeBoardList(int studyId) {
+        return studyDetailMapper.getStudyFreeBoardList(studyId);
     }
 
 
