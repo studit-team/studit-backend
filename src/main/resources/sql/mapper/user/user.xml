@@ -21,7 +21,7 @@
     </resultMap>
 
     <!-- 이메일로 사용자 조회 (권한 정보 포함) -->
-    <select id="findByEmail" resultMap="UserInfoResultMap">
+    <select id="findByUsername" resultMap="UserInfoResultMap">
         SELECT
             ui.user_id,
             ui.name,
@@ -135,5 +135,45 @@
         FROM userscrtyestbs
         WHERE sctry_dtrmn_trget_id LIKE CONCAT(#{prefix}, '%')
     </select>
+
+    <insert id="insertEmailVerification">
+        INSERT INTO USER_CERT_ESTBS
+            ( CERT_ID, USER_ID, CERT_NO, CERT_TY_CODE, EXTSH_DE, CERT_YN )
+        VALUES
+            ( #{certId}, #{username}, #{verificationCode},'email', #{expiryTime}, 'N' )
+    </insert>
+
+    <!-- 이메일 인증 정보 조회 -->
+    <select id="findEmailVerification" resultType="map">
+        SELECT
+            cert_id,
+            cert_no,
+            extsh_de,
+            cert_yn
+        FROM user_cert_estbs
+        WHERE user_id = #{username}
+          AND cert_no = #{verificationCode}
+          AND cert_ty_code = 'email'
+          AND extsh_de > NOW()
+          AND cert_yn = 'N'
+        ORDER BY extsh_de DESC
+            LIMIT 1
+    </select>
+
+    <!-- 이메일 인증 완료 처리 -->
+    <update id="updateEmailVerificationStatus">
+        UPDATE user_cert_estbs
+        SET cert_yn = 'Y'
+        WHERE user_id = #{username}
+          AND cert_no = #{verificationCode}
+          AND cert_ty_code = 'email'
+    </update>
+
+    <!-- 만료된 인증 정보 삭제 -->
+    <delete id="deleteExpiredVerifications">
+        DELETE FROM user_cert_estbs
+        WHERE cert_ty_code = 'EMAIL'
+          AND extsh_de &lt; NOW()
+    </delete>
 
 </mapper>

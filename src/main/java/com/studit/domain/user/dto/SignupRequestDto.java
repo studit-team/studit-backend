@@ -11,4 +11,5 @@ public class SignupRequestDto {
     private String password;
     private String passwordConfirm;
     private String phone;
+    private String verificationCode;
 }

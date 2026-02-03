@@ -5,13 +5,16 @@ import com.studit.domain.user.dto.UserLgnHstryDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+
 @Mapper
 public interface UserMapper {
 
     /**
      * 이메일로 사용자 정보 조회 (권한 정보 포함)
      */
-    UserDTO findByEmail(@Param("username") String username);
+    UserDTO findByUsername(@Param("username") String username);
 
     /**
      * 사용자 ID로 조회
@@ -49,4 +52,23 @@ public interface UserMapper {
      * 보안 설정 ID 개수 조회 (prefix로 시작하는)
      */
     int countSecurityIdByPrefix(@Param("prefix") String prefix);
+
+    /* 이메일 인증정보 저장 */
+    void insertEmailVerification(@Param("certId") String certId,
+                                 @Param("username") String username,
+                                 @Param("verificationCode") String verificationCode,
+                                 @Param("expiryTime") LocalDateTime expiryTime );
+
+    /* 이메일 인증 정보 조회 */
+    Map<String, Object> findEmailVerification(@Param("username") String username,
+                                              @Param("verificationCode") String verificationCode);
+
+    /* 이메일 인증 완료 처리 */
+    void updateEmailVerificationStatus(@Param("username") String username,
+                                       @Param("verificationCode") String verificationCode);
+
+    /* 만료된 인증 정보 삭제 */
+    void deleteExpiredVerifications();
+
+
 }

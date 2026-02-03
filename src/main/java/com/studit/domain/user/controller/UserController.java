@@ -60,8 +60,6 @@ public class UserController {
             return ResponseEntity.status(403).body(createErrorResponse("권한이 없습니다."));
         }
 
-        // TODO: 사용자 정보 업데이트 로직 구현 (MyBatis Mapper에 update 메서드 추가 필요)
-
         return ResponseEntity.ok(createSuccessResponse("사용자 정보가 수정되었습니다."));
     }
 

@@ -23,8 +23,8 @@ public class UserService {
     /**
      * 이메일 중복 확인
      */
-    public boolean existsByEmail(String email) {
-        UserDTO user = userMapper.findByEmail(email);
+    public boolean existsByUsername(String username) {
+        UserDTO user = userMapper.findByUsername(username);
         return user != null;
     }
 
