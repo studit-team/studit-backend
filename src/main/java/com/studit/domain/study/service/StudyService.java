@@ -51,9 +51,8 @@ public class StudyService {
     }
 
     @Transactional(readOnly = true)
-    public StudyHomeRespDto getStudyHomeData(int studyId) {
-        StudyHomeRespDto homeData = studyDetailMapper.getStudyHomeInfo(studyId);
-        System.out.printf("" + homeData.getCurrentMbrCount());
+    public StudyHomeRespDto getStudyHomeData(int studyId, String userId) {
+        StudyHomeRespDto homeData = studyDetailMapper.getStudyHomeInfo(studyId, userId);
         if (homeData != null) {
             List<ScheduleRespDto> schedules = studyDetailMapper.getWeeklySchedules(studyId);
             homeData.setWeeklySchedules(schedules);
@@ -107,6 +106,17 @@ public class StudyService {
             }
             return 1;
 
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+    @Transactional
+    public int applicationStudyProcess(StudyApplicationDto dto) {
+        try {
+            if (studyDetailMapper.checkAlreadyApplied(dto) > 0) {
+                return -1;
+            }
+            return studyDetailMapper.applicationStudy(dto);
         } catch (Exception e) {
             throw e;
         }
