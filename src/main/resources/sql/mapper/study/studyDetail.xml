@@ -28,8 +28,29 @@
              WHERE sm.study_id = s.study_id AND sm.mbr_status_code = 'APPROVED') as current_mbr_count,
             (SELECT string_agg(day_id, ',') FROM study_day_mapping sdm
              WHERE sdm.study_id = s.study_id) as regular_days,
-            (SELECT string_agg(category_id, ',') FROM study_category_mapping scm
-             WHERE scm.study_id = s.study_id) as category_ids
+            (SELECT string_agg(cc.category_nm, ',')
+             FROM study_category_mapping scm
+             JOIN category_code cc ON scm.category_id = cc.category_id
+             WHERE scm.study_id = s.study_id) as category_names,
+            (SELECT string_agg(cc.category_nm, ',')
+             FROM study_category_mapping scm
+                      JOIN category_code cc ON scm.category_id = cc.category_id
+             WHERE scm.study_id = s.study_id) as category_names,
+            (SELECT
+                 CASE
+                 WHEN r.sgg_nm LIKE r.sd_nm || '%' THEN r.sgg_nm
+                 ELSE r.sd_nm || ' ' || r.sgg_nm
+                 END
+             FROM region r
+             WHERE r.mpng_sn = s.mpng_sn) as region,
+        (SELECT
+            CASE
+            WHEN EXISTS (SELECT 1 FROM study_mbr sm WHERE sm.study_id = s.study_id AND sm.user_id = #{userId}) THEN
+            (SELECT CASE WHEN sm2.role_code = 'ROLE_LEADER' THEN 'LEADER' ELSE 'MEMBER' END
+            FROM study_mbr sm2 WHERE sm2.study_id = s.study_id AND sm2.user_id = #{userId})
+            WHEN EXISTS (SELECT 1 FROM applications ap WHERE ap.study_id = s.study_id AND ap.user_id = #{userId} AND ap.status = 'WAIT') THEN 'WAIT'
+            ELSE 'NONE'
+            END) as user_status
         FROM study s
         WHERE s.study_id = #{studyId}
     </select>
@@ -156,4 +177,17 @@
             (#{studyId},#{leaderId},#{fee.amount},#{fee.feeTyCode},'Y')
         </foreach>
     </insert>
+
+    <insert id="applicationStudy">
+        insert into applications (study_id, user_id, content, status, applied_at)
+        VALUES (#{studyId}, #{userId}, #{content}, 'WAIT', now());
+    </insert>
+
+    <select id="checkAlreadyApplied" resultType="int">
+        SELECT COUNT(*)
+        FROM applications
+        WHERE study_id = #{studyId}
+          AND user_id = #{userId}
+          AND status IN ('WAIT', 'APPROVED')
+    </select>
 </mapper>

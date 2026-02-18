@@ -13,8 +13,10 @@ public class StudyHomeRespDto {
     private String studyDc;
     private int maxMbrNocs;
     private int currentMbrCount;
-    private List<String> categoryIds;
+    private String categoryNames;
     private String regularDays;
+    private String region;
+    private String userStatus;
 
     private List<ScheduleRespDto> weeklySchedules;
     private List<PostListRespDto> recentNotices;

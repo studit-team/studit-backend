@@ -1,5 +1,6 @@
 package com.studit.domain.study.controller;
 
+import com.studit.domain.study.dto.study.StudyApplicationDto;
 import com.studit.domain.study.dto.study.StudyCreateDto;
 import com.studit.domain.study.dto.study.StudyListReqDto;
 import com.studit.domain.study.service.StudyService;
@@ -28,9 +29,9 @@ public class StudyController {
     }
 
     @GetMapping("/{studyId}/home")
-    public ResponseEntity<?> getStudySummary(@PathVariable int studyId) {
+    public ResponseEntity<?> getStudySummary(@PathVariable int studyId, @RequestParam String userId) {
 
-        return ResponseEntity.ok(studyService.getStudyHomeData(studyId));
+        return ResponseEntity.ok(studyService.getStudyHomeData(studyId, userId));
     }
 
     @GetMapping("/{studyId}/notice")
@@ -75,6 +76,17 @@ public class StudyController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("스터디 생성에 실패하였습니다.");
         }
+    }
+
+    @PostMapping("/study/apply")
+    public ResponseEntity<?> applyStudy(@RequestBody StudyApplicationDto dto) {
+        int result = studyService.applicationStudyProcess(dto);
+
+        if (result == -1) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 신청했거나 참여 중인 스터디입니다.");
+        }
+
+        return ResponseEntity.ok("신청이 완료되었습니다.");
     }
 
 
