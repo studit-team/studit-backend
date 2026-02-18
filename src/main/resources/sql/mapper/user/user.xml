@@ -176,6 +176,19 @@
         WHERE username = #{username}
     </update>
 
+    <!-- 전화번호로 사용자 조회 -->
+    <select id="findByPhone" resultMap="UserInfoResultMap">
+        SELECT
+            ui.user_id,
+            ui.name,
+            ui.username,
+            ui.phone,
+            ui.user_status_code
+        FROM user_info ui
+        WHERE ui.phone = #{phone}
+        LIMIT 1
+    </select>
+
     <!-- 만료된 인증 정보 삭제 -->
     <delete id="deleteExpiredVerifications">
         DELETE FROM user_cert_estbs

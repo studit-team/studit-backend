@@ -80,4 +80,33 @@ public class UserService {
     public String encodePassword(String plainPassword) {
         return passwordEncoder.encode(plainPassword);
     }
+
+    /**
+     * 전화번호로 아이디(이메일) 찾기
+     * - 조회 성공 시 마스킹된 이메일 반환
+     * - 조회 실패 시 null 반환
+     */
+    public String findMaskedUsernameByPhone(String phone) {
+        UserDTO user = userMapper.findByPhone(phone);
+        if (user == null) return null;
+        return maskEmail(user.getUsername());
+    }
+
+    /**
+     * 이메일 마스킹 처리
+     * ex) studit@gmail.com → stu***@gmail.com
+     */
+    private String maskEmail(String email) {
+        int atIndex = email.indexOf('@');
+        if (atIndex <= 0) return email;
+
+        String local = email.substring(0, atIndex);   // @ 앞
+        String domain = email.substring(atIndex);      // @gmail.com
+
+        // local 앞 3자리(또는 전체 길이의 절반)는 보여주고 나머지 마스킹
+        int visibleLen = Math.min(3, Math.max(1, local.length() / 2));
+        String masked = local.substring(0, visibleLen) + "*".repeat(local.length() - visibleLen);
+
+        return masked + domain;
+    }
 }

@@ -74,4 +74,7 @@ public interface UserMapper {
     void updatePassword(@Param("username") String username,
                         @Param("password") String password);
 
+    /* 전화번호로 사용자 조회 */
+    UserDTO findByPhone(@Param("phone") String phone);
+
 }

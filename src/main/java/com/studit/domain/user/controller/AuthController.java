@@ -176,6 +176,39 @@ public class AuthController {
     }
 
     /**
+     * [아이디 찾기] 전화번호로 마스킹된 이메일 조회
+     * POST /api/auth/find-id
+     */
+    @PostMapping("/find-id")
+    public ResponseEntity<?> findId(@RequestBody FindIdRequestDto request) {
+        try {
+            String phone = request.getPhone();
+
+            if (phone == null || phone.isBlank()) {
+                return ResponseEntity.badRequest()
+                        .body(createErrorResponse("휴대폰 번호를 입력해주세요."));
+            }
+
+            String maskedEmail = userService.findMaskedUsernameByPhone(phone);
+
+            if (maskedEmail == null) {
+                return ResponseEntity.badRequest()
+                        .body(createErrorResponse("입력하신 번호로 가입된 계정을 찾을 수 없습니다."));
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("maskedEmail", maskedEmail);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("아이디 찾기 실패", e);
+            return ResponseEntity.internalServerError()
+                    .body(createErrorResponse("아이디 찾기 중 오류가 발생했습니다."));
+        }
+    }
+
+    /**
      * [비밀번호 찾기] 재설정 링크 이메일 발송
      * POST /api/auth/find-password
      */
