@@ -77,4 +77,9 @@ public interface StudyDetailMapper {
      * */
     int applicationStudy(StudyApplicationDto dto);
     int checkAlreadyApplied(StudyApplicationDto dto);
+
+    /**
+     * 1. 스터디 신청 관리
+     */
+    int studyApplicationList();
 }
