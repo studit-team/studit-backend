@@ -70,5 +70,8 @@ public interface UserMapper {
     /* 만료된 인증 정보 삭제 */
     void deleteExpiredVerifications();
 
+    /* 비밀번호 업데이트 */
+    void updatePassword(@Param("username") String username,
+                        @Param("password") String password);
 
 }

@@ -58,4 +58,12 @@ public class EmailService {
             throw new RuntimeException("이메일 발송에 실패했습니다.", e);
         }
     }
+
+    /**
+     * SimpleMailMessage 직접 전송 (PasswordResetService에서 사용)
+     */
+    public void sendRawEmail(SimpleMailMessage message) {
+        message.setFrom(fromEmail);
+        mailSender.send(message);
+    }
 }

@@ -169,6 +169,13 @@
           AND cert_ty_code = 'email'
     </update>
 
+    <!-- 비밀번호 업데이트 -->
+    <update id="updatePassword">
+        UPDATE user_info
+        SET password = #{password}
+        WHERE username = #{username}
+    </update>
+
     <!-- 만료된 인증 정보 삭제 -->
     <delete id="deleteExpiredVerifications">
         DELETE FROM user_cert_estbs

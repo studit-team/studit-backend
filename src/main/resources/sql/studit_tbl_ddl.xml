@@ -318,3 +318,7 @@ COMMENT ON TABLE study_schedule IS '스터디 모임 일정 관리 테이블';
 COMMENT ON COLUMN study_schedule.schedule_id IS '일정 고유 번호';
 COMMENT ON COLUMN study_schedule.meeting_at IS '실제 모임 날짜 및 시간';
 COMMENT ON COLUMN study_schedule.status IS 'PLANNED(예정), COMPLETED(완료), CANCELLED(취소)';
+
+
+--컬럼 크기 변경
+ALTER TABLE user_info ALTER COLUMN username TYPE VARCHAR(100);

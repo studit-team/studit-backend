@@ -1,6 +1,7 @@
 package com.studit.domain.user.controller;
 
 import com.studit.domain.user.dto.*;
+import com.studit.domain.user.service.PasswordResetService;
 import com.studit.domain.user.service.UserService;
 import com.studit.domain.user.service.VerificationService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class AuthController {
 
     private final UserService userService;
     private final VerificationService verificationService;
+    private final PasswordResetService passwordResetService;
 
     /**
      * 인증번호 발송
@@ -170,6 +172,86 @@ public class AuthController {
             log.error("회원가입 실패", e);
             return ResponseEntity.internalServerError()
                     .body(createErrorResponse("회원가입 중 오류가 발생했습니다: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * [비밀번호 찾기] 재설정 링크 이메일 발송
+     * POST /api/auth/find-password
+     */
+    @PostMapping("/find-password")
+    public ResponseEntity<?> findPassword(@RequestBody PasswordResetRequestDto request) {
+        try {
+            String username = request.getUsername();
+
+            if (!isValidEmail(username)) {
+                return ResponseEntity.badRequest()
+                        .body(createErrorResponse("올바른 이메일 형식이 아닙니다."));
+            }
+
+            // 가입 여부와 관계없이 동일 응답 (사용자 열거 공격 방지)
+            passwordResetService.sendPasswordResetLink(username);
+
+            return ResponseEntity.ok(createSuccessResponse("입력하신 이메일로 비밀번호 변경 링크를 전송했습니다."));
+
+        } catch (Exception e) {
+            log.error("비밀번호 재설정 링크 발송 실패", e);
+            return ResponseEntity.internalServerError()
+                    .body(createErrorResponse("이메일 전송 중 오류가 발생했습니다."));
+        }
+    }
+
+    /**
+     * [비밀번호 찾기] 토큰 유효성 검증
+     * GET /api/auth/reset-password/validate?token=...
+     */
+    @GetMapping("/reset-password/validate")
+    public ResponseEntity<?> validateResetToken(@RequestParam String token) {
+        boolean valid = passwordResetService.validateResetToken(token);
+        if (valid) {
+            return ResponseEntity.ok(createSuccessResponse("유효한 토큰입니다."));
+        } else {
+            return ResponseEntity.badRequest()
+                    .body(createErrorResponse("유효하지 않거나 만료된 링크입니다. 다시 요청해주세요."));
+        }
+    }
+
+    /**
+     * [비밀번호 찾기] 새 비밀번호 설정
+     * POST /api/auth/reset-password
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody PasswordResetConfirmDto request) {
+        try {
+            // 1. 토큰 유효성 검증
+            if (!passwordResetService.validateResetToken(request.getToken())) {
+                return ResponseEntity.badRequest()
+                        .body(createErrorResponse("유효하지 않거나 만료된 링크입니다. 다시 요청해주세요."));
+            }
+
+            // 2. 비밀번호 유효성 검증
+            if (!isValidPassword(request.getNewPassword())) {
+                return ResponseEntity.badRequest()
+                        .body(createErrorResponse("비밀번호는 영문/숫자/특수문자 중 2가지 이상을 포함하여 8~32자여야 합니다."));
+            }
+
+            // 3. 비밀번호 확인 일치 여부
+            if (!request.getNewPassword().equals(request.getNewPasswordConfirm())) {
+                return ResponseEntity.badRequest()
+                        .body(createErrorResponse("비밀번호가 일치하지 않습니다."));
+            }
+
+            // 4. 비밀번호 재설정
+            passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
+
+            return ResponseEntity.ok(createSuccessResponse("비밀번호가 성공적으로 변경되었습니다."));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(createErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            log.error("비밀번호 재설정 실패", e);
+            return ResponseEntity.internalServerError()
+                    .body(createErrorResponse("비밀번호 변경 중 오류가 발생했습니다."));
         }
     }
 
