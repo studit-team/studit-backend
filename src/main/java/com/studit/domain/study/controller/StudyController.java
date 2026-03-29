@@ -3,11 +3,14 @@ package com.studit.domain.study.controller;
 import com.studit.domain.study.dto.study.StudyApplicationDto;
 import com.studit.domain.study.dto.study.StudyCreateDto;
 import com.studit.domain.study.dto.study.StudyListReqDto;
+import com.studit.domain.study.dto.study.StudyMemberDto;
 import com.studit.domain.study.service.StudyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/studies")
@@ -67,6 +70,7 @@ public class StudyController {
 
         return ResponseEntity.ok(studyService.getCategoryList());
     }
+
     @PostMapping("/study")
     public ResponseEntity<String> createStudy(@RequestBody StudyCreateDto dto) {
         int result = studyService.createStudyProcess(dto);
@@ -89,6 +93,43 @@ public class StudyController {
         return ResponseEntity.ok("신청이 완료되었습니다.");
     }
 
+    @GetMapping("/{studyId}/applicants")
+    public ResponseEntity<?> getApplicationList(@PathVariable Long studyId) {
 
+        return ResponseEntity.ok(studyService.studyApplicationList(studyId));
+    }
+
+    @PutMapping("/{studyId}/applicants/{applicantUserId}")
+    public ResponseEntity<?> updateStudyApplicationStatus(
+            @PathVariable Long studyId,
+            @PathVariable String applicantUserId,
+            @RequestBody StudyApplicationDto applicationDto // status를 전달받기 위함
+    ) {
+        // 서비스 단에서 status(APPROVE/REJECT)에 따른 로직 처리 필요
+        int result = studyService.updateStudyApplication(studyId, applicantUserId, applicationDto.getStatus());
+
+        if(result == -1) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("잘못된 접근입니다.");
+        }
+
+        String message = "APPROVE".equals(applicationDto.getStatus()) ? "신청이 수락되었습니다." : "신청이 거절되었습니다.";
+        return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/{studyId}/members")
+    public ResponseEntity<List<StudyMemberDto>> getStudyMembers(@PathVariable Long studyId) {
+        List<StudyMemberDto> members = studyService.getStudyMemberList(studyId);
+        return ResponseEntity.ok(members);
+    }
+
+    @DeleteMapping("/{studyId}/members/{userId}")
+    public ResponseEntity<?> kickMember(@PathVariable Long studyId, @PathVariable String userId) {
+        // 실제 서비스에서는 방장 본인은 강퇴할 수 없도록 검증 로직이 포함됩니다.
+        int result = studyService.removeMember(studyId, userId);
+        if(result > 0) {
+            return ResponseEntity.ok("멤버가 내보내졌습니다.");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("처리 중 오류가 발생했습니다.");
+    }
 
 }

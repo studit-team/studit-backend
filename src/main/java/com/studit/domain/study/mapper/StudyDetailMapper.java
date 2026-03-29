@@ -7,6 +7,7 @@ import com.studit.domain.study.dto.schedule.ScheduleRespDto;
 import com.studit.domain.study.dto.study.StudyApplicationDto;
 import com.studit.domain.study.dto.study.StudyCreateDto;
 import com.studit.domain.study.dto.study.StudyHomeRespDto;
+import com.studit.domain.study.dto.study.StudyMemberDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -78,8 +79,31 @@ public interface StudyDetailMapper {
     int applicationStudy(StudyApplicationDto dto);
     int checkAlreadyApplied(StudyApplicationDto dto);
 
-    /**
-     * 1. 스터디 신청 관리
+    /**     * 1. 스터디 신청 목록 조회 (반드시 List로 변경해야 여러명이 보입니다)
      */
-    int studyApplicationList();
+    List<StudyApplicationDto> studyApplicationList(@Param("studyId") Long studyId);
+
+    /**
+     * 2. 신청서 상태 업데이트 (WAIT -> APPROVE / REJECT)
+     */
+    int updateApplicationStatus(@Param("studyId") Long studyId,
+                                @Param("userId") String userId,
+                                @Param("status") String status);
+
+    /**
+     * 3. 승인 시 스터디 멤버로 추가 (insertStudyMember와 비슷하지만 파라미터 구성이 다름)
+     */
+    int insertStudyMemberApproved(@Param("studyId") Long studyId, @Param("userId") String userId);
+
+    /**
+     * 스터디 멤버 목록 조회
+     */
+    List<StudyMemberDto> getStudyMemberList(@Param("studyId") Long studyId);
+
+    /**
+     * 스터디 멤버 삭제 (강퇴)
+     */
+    int deleteStudyMember(@Param("studyId") Long studyId, @Param("userId") String userId);
+
+
 }

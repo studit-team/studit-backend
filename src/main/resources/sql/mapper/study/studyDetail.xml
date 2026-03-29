@@ -190,4 +190,49 @@
           AND user_id = #{userId}
           AND status IN ('WAIT', 'APPROVED')
     </select>
+
+    <select id="studyApplicationList" resultType="com.studit.domain.study.dto.study.StudyApplicationDto">
+        SELECT ap.study_id as studyId, ap.user_id as userId, content, status, ap.applied_at as appliedAt, ui.name
+        FROM applications ap
+        left join public.user_info ui on ui.user_id = ap.user_id
+        WHERE ap.study_id = #{studyId}
+        AND ap.status = 'WAIT'
+        ORDER BY ap.applied_at DESC
+    </select>
+
+    <update id="updateApplicationStatus">
+        UPDATE applications
+        SET status = #{status}
+        WHERE study_id = #{studyId}
+        AND user_id = #{userId}
+    </update>
+
+    <insert id="insertStudyMemberApproved">
+        INSERT INTO study_mbr (study_id, user_id, role_code, mbr_status_code, join_date)
+        VALUES (#{studyId}, #{userId}, 'ROLE_MEMBER', 'APPROVED', NOW())
+    </insert>
+
+    <select id="getStudyMemberList" resultType="com.studit.domain.study.dto.study.StudyMemberDto">
+        SELECT
+        sm.user_id as userId,
+        ui.name,
+        ui.username,
+        sm.role_code as roleCode,
+        sm.mbr_status_code as mbrStatusCode,
+        sm.join_date as joinDate
+        FROM study_mbr sm
+        JOIN user_info ui ON sm.user_id = ui.user_id
+        WHERE sm.study_id = #{studyId}
+        AND sm.mbr_status_code = 'APPROVED'
+        ORDER BY
+        CASE WHEN sm.role_code = 'ROLE_LEADER' THEN 1 ELSE 2 END,
+        sm.join_date ASC
+    </select>
+
+    <delete id="deleteStudyMember">
+        DELETE FROM study_mbr
+        WHERE study_id = #{studyId}
+        AND user_id = #{userId}
+        AND role_code != 'ROLE_LEADER' </delete>
+
 </mapper>

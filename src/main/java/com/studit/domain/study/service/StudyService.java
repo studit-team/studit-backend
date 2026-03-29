@@ -122,7 +122,65 @@ public class StudyService {
         }
     }
 
+    @Transactional
+    public List<StudyApplicationDto> studyApplicationList(Long studyId) {
+        try {
+            return studyDetailMapper.studyApplicationList(studyId);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 
+    @Transactional
+    public int updateStudyApplication(Long studyId, String applicantUserId, String status) {
+        try {
+            // 1. 현재 인원 정보 조회 (작성하신 getStudyHomeInfo 활용)
+            // userId는 아무나 넣어도 되지만 방장 ID나 null 처리가 필요할 수 있어 임시로 applicantUserId 사용
+            StudyHomeRespDto study = studyDetailMapper.getStudyHomeInfo(studyId.intValue(), applicantUserId);
+
+            if (study == null) return -1;
+
+            // 2. 승인(APPROVE) 처리 시 로직
+            if ("APPROVE".equals(status)) {
+                // 이미 작성하신 쿼리에서 카운트된 currentMbrCount와 maxMbrNocs 비교
+                if (study.getCurrentMbrCount() >= study.getMaxMbrNocs()) {
+                    return -1; // 인원 초과
+                }
+
+                // 스터디 멤버 테이블에 유저 추가 (mbr_status_code='APPROVED'로 등록)
+                studyDetailMapper.insertStudyMemberApproved(studyId, applicantUserId);
+            }
+
+            // 3. 신청서 상태 업데이트 (WAIT -> APPROVE 또는 REJECT)
+            int updatedRows = studyDetailMapper.updateApplicationStatus(studyId, applicantUserId, status);
+
+            return updatedRows > 0 ? 1 : 0;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // 멤버 목록 조회
+    public List<StudyMemberDto> getStudyMemberList(Long studyId) {
+        return studyDetailMapper.getStudyMemberList(studyId);
+    }
+
+    // 멤버 강퇴 (삭제)
+    @Transactional
+    public int removeMember(Long studyId, String userId) {
+        try {
+            // 1. 멤버 삭제 (study_mbr 테이블)
+            int result = studyDetailMapper.deleteStudyMember(studyId, userId);
+
+            // 2. 신청서 테이블에서도 삭제하거나 상태를 변경 (선택 사항)
+            // studyDetailMapper.updateApplicationStatus(studyId, userId, "KICKED");
+
+            return result;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 
 
 }
